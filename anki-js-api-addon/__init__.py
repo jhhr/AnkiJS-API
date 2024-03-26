@@ -3,6 +3,7 @@ from typing import Any, Tuple
 import aqt
 from aqt import gui_hooks, mw
 from anki.scheduler.v3 import Scheduler as V3Scheduler
+import re
 
 command_prefix = "AnkiJS."
 
@@ -84,6 +85,21 @@ def on_webview_did_receive_js_message(
                     ret = labels[i - 1]
                 else:
                     ret = mw.col.sched.nextIvlStr(mw.reviewer.card, i, True) or "&nbsp;"
+            
+            elif cmd.startswith("ankiSearchCard(") and cmd.endswith(")"):
+                try:
+                    search_term = re.search(r'ankiSearchCard\(["\']{1}(.+?)["\']{1}\)', cmd).group(1)
+                except:
+                    search_term = None
+                browser = aqt.dialogs.open('Browser', mw.window())
+                browser.activateWindow()
+                if search_term is not None:
+                    browser.form.searchEdit.lineEdit().setText(search_term)
+                    if hasattr(browser, 'onSearch'):
+                        browser.onSearch()
+                    else:
+                        browser.onSearchActivated()
+                ret = mw.findCards(search_term)
                        
 
         except Exception as e:
