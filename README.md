@@ -174,3 +174,8 @@ pycmd("AnkiJS.ankiGetNextTime4()", (ret) => {
     console.log(ret);
 });
 ```
+
+## Search in browser
+```javascript
+pycmd("AnkiJS.ankiSearchCard('search')");
+```
